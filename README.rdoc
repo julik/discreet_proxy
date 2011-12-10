@@ -10,7 +10,7 @@ To read every .p file on your Flame system and write it out as a PNG preview to 
     proxy.save_png(icon_path)
   end
   
-Also you can use the builtin `flame_proxy_icon` bionary to convert to and from the format.
+Also you can use the builtin `flame_proxy_icon` binary to convert to and from the format.
 
 == Contributing to discreet_proxy
  
