@@ -2,9 +2,11 @@
 require 'rubygems'
 require 'bundler'
 require 'jeweler'
+require './lib/discreet_proxy'
 
 Jeweler::Tasks.new do |gem|
   # gem is a Gem::Specification... see http://docs.rubygems.org/read/chapter/20 for more options
+  gem.version = DiscreetProxy::VERSION
   gem.name = "discreet_proxy"
   gem.homepage = "http://github.com/julik/discreet_proxy"
   gem.license = "MIT"
