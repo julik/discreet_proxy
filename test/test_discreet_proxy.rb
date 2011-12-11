@@ -3,22 +3,16 @@ require 'helper'
 class TestDiscreetProxy < Test::Unit::TestCase
   def test_reading
     f = DiscreetProxy.from_file(File.dirname(__FILE__) + "/test_proxies/e292_v02.batch.p")
-    assert_equal 0xFAF0,  f.magic, "Should have the same magic byte"
-    assert_in_delta 1.1, f.version, 0.0001, "Version should be correct"
     assert_equal 126, f.width, "Width should be correct"
     assert_equal 92, f.height, "Height should be correct"
-    assert_equal 130, f.depth, "Depth should be proper"
   end
   
   def test_reading_from_io
     chunk = File.read(File.dirname(__FILE__) + "/test_proxies/e292_v02.batch.p")
     io = StringIO.new(chunk)
     f = DiscreetProxy.from_io(io)
-    assert_equal 0xFAF0,  f.magic, "Should have the same magic byte"
-    assert_in_delta 1.1, f.version, 0.0001, "Version should be correct"
     assert_equal 126, f.width, "Width should be correct"
     assert_equal 92, f.height, "Height should be correct"
-    assert_equal 130, f.depth, "Depth should be proper"
   end
   
   def test_to_dotp
@@ -27,6 +21,7 @@ class TestDiscreetProxy < Test::Unit::TestCase
       repl = '/tmp/%s.p' % File.basename(f)
       pixdata = proxy.to_dotp # Package up
       
+      puts "Roundtripping #{File.basename(f)}"
       proxy_roundtrip = DiscreetProxy.from_io(StringIO.new(pixdata))
       assert_equal proxy_roundtrip.to_png, proxy.to_png
     end

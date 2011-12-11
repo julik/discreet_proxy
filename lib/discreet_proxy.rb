@@ -6,11 +6,40 @@ class DiscreetProxy
   
   # Parse a .p file and return a Proxy
   def self.from_file(path)
-    File.open(path, "rb", &method(:from_io))
+    File.open(path, "rb") {|f| from_io(f) }
+  end
+  
+  # Creates a proxy object from a passed ChunkyPNG
+  def self.from_png(png)
+    p = Proxy.new(png.width, png.height)
+    p.rows = []
+    (0..png.height).each_with_index do | _, i|
+      # Read the whole row at offset at once
+      row = png.pixels[(i * png.width)...((i * png.width) + png.width)]
+      p.rows.push(row)
+    end
+    p
+  end
+  
+  # Parses out the proxy contained in the passed IO object
+  def self.from_io(io)
+    pat = "na6nnn"
+    
+    magik, version_bswap, width, height, depth, _ = io.read(40).unpack(pat)
+    raise "The passed data did not start with the magic bytes #{MAGIC}" if magik != MAGIC
+    
+    # This version check is busted for now, somehow
+    ver = version_bswap.reverse.unpack("e").pop
+    $stderr.puts "The passed version #{ver} is suspicious" if (ver - PROXY_VERSION).abs > 0.0001
+    raise "Unknown proxy depth #{depth}" if depth != PROXY_DEPTH
+    
+    p = Proxy.new(width, height)
+    p.fill_pixbuf(io)
+    return p
   end
   
   MAGIC = 0xfaf0
-  PROXY_VERSION = 1.1
+  PROXY_VERSION = 1.10003
   PROXY_DEPTH = 130
   
   # Here's what Autodesk has to say:
@@ -38,20 +67,15 @@ class DiscreetProxy
   # This class represents such a proxy.
   class Proxy
     
-    # The magic field
-    attr_accessor :magic
-    
-    # Version, 1.1 by default
-    attr_accessor :version
-    
     # Image dimensions, standard is 126x92
     attr_accessor :width, :height
     
-    # Image depth
-    attr_accessor :depth
-    
     # Array of rows with each row being an array of 3-valut RGB triplets
     attr_accessor :rows 
+    
+    def initialize(w, h)
+      @width, @height = w.to_i, h.to_i
+    end
     
     def to_png
       png = ChunkyPNG::Image.new(@width, @height)
@@ -64,27 +88,23 @@ class DiscreetProxy
       png
     end
     
-    DEFAULT_PIXEL = [0,0,0]
-    EIGHT_BIT_RGB = "CCC"
     
     # Compose a string with the entire contents of a proxy file
     def to_dotp
       # Pack the header
       buf = StringIO.new(0xFF.chr * 40)
-      byteswap_version = [version].pack("e").reverse
-      header = [magic, byteswap_version, width, height, depth].pack("na6nnn")
+      byteswap_version = [PROXY_VERSION].pack("e").reverse
+      header = [MAGIC, byteswap_version, width, height, PROXY_DEPTH].pack("na6nnn")
       buf.write(header)
       buf.seek(40)
       
-      # Now...
-      # all the reverses come in reverse
+      # Now... all the reverses come in reverse
       @rows.reverse.each do | returning_row |
-        # Then write the padding
         returning_row.each do | pix |
-          rgb = unpack_rgb(pix)
-          pixvalue = rgb.pack(EIGHT_BIT_RGB)
-          buf.write(pixvalue) 
+          rgb = unpack_rgb(pix).pack("CCC")
+          buf.write(rgb) 
         end
+        # Then write the padding
         buf.write(0x00.chr * row_pad)
       end
       
@@ -152,37 +172,6 @@ class DiscreetProxy
     def unpack_rgb(rgb)
       [ChunkyPNG::Color.r(rgb), ChunkyPNG::Color.g(rgb), ChunkyPNG::Color.b(rgb)]
     end
-  end
-  
-  # Creates a proxy object from a passed ChunkyPNG
-  def self.from_png(png)
-    p = Proxy.new
-    p.magic = MAGIC
-    p.depth = PROXY_DEPTH
-    p.version = PROXY_VERSION
-    p.width = png.width
-    p.height = png.height
-    p.rows = []
-    
-    (0..png.height).each_with_index do | _, i|
-      # Read the whole row at offset at once
-      row = png.pixels[(i * png.width)...((i * png.width) + png.width)]
-      p.rows.push(row)
-    end
-    p
-  end
-  
-  # Parses out the proxy contained in the passed IO object
-  def self.from_io(io)
-    p = Proxy.new
-    pat = "na6nnn"
-    p.magic, version_bswap, p.width, p.height, p.depth, _ = io.read(40).unpack(pat)
-    raise "The passed data did not start with the magic bytes #{MAGIC}" if p.magic != MAGIC
-    
-    # Byteswap the float
-    p.version = version_bswap.reverse.unpack("e").pop
-    p.fill_pixbuf(io)
-    return p
   end
   
 end
