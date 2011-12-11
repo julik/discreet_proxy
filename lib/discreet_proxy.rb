@@ -58,7 +58,7 @@ class DiscreetProxy
       png.metadata["Software"] = "Ruby DiscreetProxy converter/chunky_png"
       @rows.each_with_index do | row, row_idx |
         row.each_with_index do | pix, col_idx |
-          png[col_idx, row_idx] = ChunkyPNG::Color.rgb(pix[0].to_i, pix[1].to_i, pix[2].to_i)
+          png[col_idx, row_idx] = pix
         end
       end
       png
@@ -67,7 +67,7 @@ class DiscreetProxy
     DEFAULT_PIXEL = [0,0,0]
     EIGHT_BIT_RGB = "CCC"
     
-    # Writes the proxyfile out to the passed path
+    # Compose a string with the entire contents of a proxy file
     def to_dotp
       # Pack the header
       buf = StringIO.new(0xFF.chr * 40)
@@ -81,12 +81,8 @@ class DiscreetProxy
       @rows.reverse.each do | returning_row |
         # Then write the padding
         returning_row.each do | pix |
-          pixvalue = begin
-            pix.pack(EIGHT_BIT_RGB)
-          rescue
-            DEFAULT_PIXEL.pack(EIGHT_BIT_RGB)
-          end
-          
+          rgb = unpack_rgb(pix)
+          pixvalue = rgb.pack(EIGHT_BIT_RGB)
           buf.write(pixvalue) 
         end
         buf.write(0x00.chr * row_pad)
@@ -128,7 +124,8 @@ class DiscreetProxy
         # Read 3x8bit for each pixel
         @width.times do
           # And guess what - here they are reversed too! How awesome is that!
-          row.push((row_data.read(3) || "AAA").unpack("CCC").reverse)
+          rgb = (row_data.read(3) || "AAA").unpack("CCC").reverse
+          row.push(pack_rgb(*rgb))
         end
         
         # Abd the row itself is reversed too
@@ -145,6 +142,16 @@ class DiscreetProxy
     def save_png(filename)
       to_png.save(filename)
     end
+    
+    private
+    
+    def pack_rgb(r,g,b)
+      ChunkyPNG::Color.rgb(r.to_i, g.to_i, b.to_i)
+    end
+    
+    def unpack_rgb(rgb)
+      [ChunkyPNG::Color.r(rgb), ChunkyPNG::Color.g(rgb), ChunkyPNG::Color.b(rgb)]
+    end
   end
   
   # Creates a proxy object from a passed ChunkyPNG
@@ -160,9 +167,7 @@ class DiscreetProxy
     (0..png.height).each_with_index do | _, i|
       # Read the whole row at offset at once
       row = png.pixels[(i * png.width)...((i * png.width) + png.width)]
-      # Extract the color components from the single integer
-      row_rgb = row.map{|e| [ChunkyPNG::Color.r(e), ChunkyPNG::Color.g(e), ChunkyPNG::Color.b(e)] }
-      p.rows.push(row_rgb)
+      p.rows.push(row)
     end
     p
   end
