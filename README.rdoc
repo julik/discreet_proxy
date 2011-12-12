@@ -12,6 +12,14 @@ To read every .p file on your Flame system and write it out as a PNG preview to 
   
 Also you can use the builtin `flame_proxy_icon` binary to convert to and from the format.
 
+  $flame_proxy_icon --from-png my_icon.png
+  
+will create "my_icon.p", and the reverse
+
+  $flame_proxy_icon --from-icon SuperSetup.batch.p
+
+will create a SuperSetup.batch.png file that you can massage in, say, Photoshop.
+
 == Contributing to discreet_proxy
  
 * Check out the latest master to make sure the feature hasn't been implemented or the bug hasn't been fixed yet
