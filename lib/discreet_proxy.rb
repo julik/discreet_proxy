@@ -43,30 +43,8 @@ module DiscreetProxy
   VERSION_BSWAP = "\x00\x00?\x8C\xCC\xCD"
   DEFAULT_WIDTH = 126
   DEFAULT_HEIGHT = 92
-  
-  # Here's what Autodesk has to say:
-  #
-  # You can use Flame to create a proxy of your effect, but if you don't have access to Flame, 
-  # or want to create proxies programmatically, you
-  # can use the following header (byteswap). The standard width and height of the proxy is 126x92, and the
-  # file is RGB 8-bit. Save your proxy files as .p, and place them in the same folder as your .glsl and .xml
-  # files of the same name.
-  # 
-  #typedef struct {
-  #        unsigned short Magic;
-  #        float  Version; // 6 bytes long
-  #        short  Width;
-  #        short  Height;
-  #        short  Depth;
-  #        float  Unused [ 6 ];
-  #} LibraryProxyHeaderStruct;
-  # and this bitch is 6 bytes aligned
-  #
-  ##define MAGIC 0xfaf0
-  ##define PROXY_VERSION 1.1f
-  ##define PROXY_DEPTH 130
-  #
-  # This class represents such a proxy.
+
+  # This class represents a proxy.
   class Proxy
     
     # Image dimensions, standard is 126x92
