@@ -7,7 +7,7 @@ To read every .p file on your Flame system and write it out as a PNG preview to 
   Dir.glob("/usr/discreet/project/**/*.p").each do | icon_path |
     proxy = DiscreetProxy.from_file(icon_path)
     dest_path = "/tmp/" + File.basename(icon_path) + ".png"
-    proxy.save_png(icon_path)
+    proxy.save_png(dest_path)
   end
   
 Also you can use the builtin `flame_proxy_icon` binary to convert to and from the format.
