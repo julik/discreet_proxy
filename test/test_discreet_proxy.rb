@@ -75,9 +75,11 @@ class TestDiscreetProxy < Test::Unit::TestCase
   
   def test_save
     path = File.dirname(__FILE__) + "/test_proxies/Kanaty.stabilizer.p"
+    ref_output = File.dirname(__FILE__) + "/test_proxy_out/Kanaty.stabilizer.p"
     proxy = DiscreetProxy.from_file(path)
     proxy.save(TEST_OUTPUT)
     assert File.exist?(TEST_OUTPUT)
+    assert_equal File.read(TEST_OUTPUT), File.read(ref_output)
   end
   
   def test_save_png
