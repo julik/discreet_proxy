@@ -1,7 +1,7 @@
 require "chunky_png"
 
 # The whole module for making and reading Flame proxy icon files
-class DiscreetProxy
+module DiscreetProxy
   VERSION = "0.0.1"
   
   # Parse a .p file and return a Proxy
@@ -12,11 +12,10 @@ class DiscreetProxy
   # Creates a proxy object from a passed ChunkyPNG
   def self.from_png(png)
     p = Proxy.new(png.width, png.height)
-    p.rows = []
-    (0..png.height).each_with_index do | _, i|
-      # Read the whole row at offset at once
-      row = png.pixels[(i * png.width)...((i * png.width) + png.width)]
-      p.rows.push(row)
+    (0...png.width).each do | x |
+      (0...png.height).each do | y |
+        p[x,y] = png[x,y]
+      end
     end
     p
   end
@@ -41,6 +40,9 @@ class DiscreetProxy
   MAGIC = 0xfaf0
   PROXY_VERSION = 1.10003
   PROXY_DEPTH = 130
+  VERSION_BSWAP = "\x00\x00?\x8C\xCC\xCD"
+  DEFAULT_WIDTH = 126
+  DEFAULT_HEIGHT = 92
   
   # Here's what Autodesk has to say:
   #
@@ -68,13 +70,15 @@ class DiscreetProxy
   class Proxy
     
     # Image dimensions, standard is 126x92
-    attr_accessor :width, :height
+    attr_reader :width, :height
     
     # Array of rows with each row being an array of 3-valut RGB triplets
-    attr_accessor :rows 
+    attr_reader :rows 
     
-    def initialize(w, h)
+    def initialize(w = DEFAULT_WIDTH, h = DEFAULT_HEIGHT)
       @width, @height = w.to_i, h.to_i
+      # Blank out the pixel values with black
+      generate_black
     end
     
     def to_png
@@ -88,13 +92,33 @@ class DiscreetProxy
       png
     end
     
+    # Get an array of the [r,g,b] pixel values at the specific coordinate
+    def [](left, top)
+      png_color_int = @rows[top][left]
+      unpack_rgb(png_color_int)
+    end
+    
+    # Set the color value at the specific coordinate. If the passed value is a single
+    # integer, it gets interpreted as a PNG color value. If a triplet array with three
+    # components is passed it's interpreted as RGB
+    def []=(x, y, *rgb)
+      color = rgb.flatten
+      
+      # Check for raw pixel value
+      if color.length == 1 && color[0].is_a?(Numeric)
+        @rows[y][x] = color[0]
+      else
+        r, g, b = color.map{|e| e.to_i }
+        @rows[y][x] = pack_rgb(r, g ,b)
+      end
+    end
     
     # Compose a string with the entire contents of a proxy file
     def to_dotp
       # Pack the header
       buf = StringIO.new(0xFF.chr * 40)
       byteswap_version = [PROXY_VERSION].pack("e").reverse
-      header = [MAGIC, byteswap_version, width, height, PROXY_DEPTH].pack("na6nnn")
+      header = [MAGIC, VERSION_BSWAP, width, height, PROXY_DEPTH].pack("na6nnn")
       buf.write(header)
       buf.seek(40)
       
@@ -109,12 +133,6 @@ class DiscreetProxy
       end
       
       buf.string
-    end
-    
-    # Rows start at 8-byte aligned boundaries. BUT due to the
-    # fact that this is a BDSM Silicon Graphics format the start of the row is END of the image.
-    def row_pad
-      @row_pad ||= ((@width * 3) % 8)
     end
     
     # Once the proxy metadata is known, this method can parse out the actual pixel data
@@ -165,12 +183,24 @@ class DiscreetProxy
     
     private
     
+    # Rows start at 8-byte aligned boundaries. BUT due to the
+    # fact that this is a BDSM Silicon Graphics format the start of the row is END of the image.
+    def row_pad
+      @row_pad ||= ((@width * 3) % 8)
+    end
+    
     def pack_rgb(r,g,b)
       ChunkyPNG::Color.rgb(r.to_i, g.to_i, b.to_i)
     end
     
     def unpack_rgb(rgb)
       [ChunkyPNG::Color.r(rgb), ChunkyPNG::Color.g(rgb), ChunkyPNG::Color.b(rgb)]
+    end
+    
+    def generate_black
+      @rows = []
+      row = [0] * @width
+      @height.times{ @rows.push(row.dup) }
     end
   end
   
