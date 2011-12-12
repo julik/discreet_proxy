@@ -101,8 +101,9 @@ module DiscreetProxy
       buf.seek(40)
       
       # Now... all the reverses come in reverse
-      @rows.reverse.each do | returning_row |
-        returning_row.each do | pix |
+      (0...@rows.length).each do | row_offset |
+        row_idx = (@rows.length - 1) - row_offset
+        @rows[row_idx].each do | pix |
           rgb = unpack_rgb(pix).pack("CCC")
           buf.write(rgb) 
         end
