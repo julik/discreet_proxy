@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Julik Tarkhanov"]
-  s.date = "2011-12-10"
+  s.date = "2011-12-12"
   s.email = "me@julik.nl"
   s.executables = ["flame_proxy_icon"]
   s.extra_rdoc_files = [
@@ -23,6 +23,7 @@ Gem::Specification.new do |s|
     "README.rdoc",
     "Rakefile",
     "bin/flame_proxy_icon",
+    "discreet_proxy.gemspec",
     "lib/discreet_proxy.rb",
     "test/converted_png_proxies/Kanaty.stabilizer.p.p.png",
     "test/converted_png_proxies/Medianize.stabilizer.p.p.png",
@@ -36,6 +37,7 @@ Gem::Specification.new do |s|
     "test/converted_png_proxies/spontaan2.stabilizer.p.p.png",
     "test/converted_png_proxies/t2.batch.p.p.png",
     "test/helper.rb",
+    "test/test_cli.rb",
     "test/test_discreet_proxy.rb",
     "test/test_proxies/Kanaty.stabilizer.p",
     "test/test_proxies/Medianize.stabilizer.p",
@@ -63,17 +65,20 @@ Gem::Specification.new do |s|
       s.add_development_dependency(%q<rake>, [">= 0"])
       s.add_development_dependency(%q<bundler>, ["~> 1.0.0"])
       s.add_development_dependency(%q<jeweler>, ["~> 1.6.4"])
+      s.add_development_dependency(%q<cli_test>, [">= 0"])
     else
       s.add_dependency(%q<chunky_png>, [">= 0"])
       s.add_dependency(%q<rake>, [">= 0"])
       s.add_dependency(%q<bundler>, ["~> 1.0.0"])
       s.add_dependency(%q<jeweler>, ["~> 1.6.4"])
+      s.add_dependency(%q<cli_test>, [">= 0"])
     end
   else
     s.add_dependency(%q<chunky_png>, [">= 0"])
     s.add_dependency(%q<rake>, [">= 0"])
     s.add_dependency(%q<bundler>, ["~> 1.0.0"])
     s.add_dependency(%q<jeweler>, ["~> 1.6.4"])
+    s.add_dependency(%q<cli_test>, [">= 0"])
   end
 end
 
