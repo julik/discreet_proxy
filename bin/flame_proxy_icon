@@ -4,10 +4,11 @@ require File.dirname(__FILE__) + "/../lib/discreet_proxy"
 require "optparse"
 
 $from_png = false
+$error = true
 OptionParser.new do | op |
   op.banner = "Usage: flame_proxy_icon --png convert_from_this_png.png"
-  op.on("--from-png", "Generate a .p proxy from a PNG file") { $from_png = true}
-  op.on("--from-icon", "Generate a .png file from a proxy .p file") { $from_png = false}
+  op.on("--from-png", "Generate a .p proxy from a PNG file") { $from_png = true; $error = false}
+  op.on("--from-icon", "Generate a .png file from a proxy .p file") { $from_png = false; $error = false}
 end.parse!
 
 ARGV.each do | filename_to_convert |
@@ -21,4 +22,9 @@ ARGV.each do | filename_to_convert |
     proxy = DiscreetProxy.from_file(filename_to_convert)
     proxy.save_png(destination_filename)
   end
+end
+
+if $error
+  $stderr.puts "You need to provide the path to the file being converted. Also use the --help option."
+  exit(1)
 end
