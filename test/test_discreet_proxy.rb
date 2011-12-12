@@ -45,11 +45,29 @@ class TestDiscreetProxy < Test::Unit::TestCase
     end
   end
   
+  TEST_OUTPUT = "./test.p"
+  TEST_PNG = "./test.png"
+  
   def test_save
-    flunk
+    begin
+      path = File.dirname(__FILE__) + "/test_proxies/Kanaty.stabilizer.p"
+      proxy = DiscreetProxy.from_file(f)
+      proxy.save(TEST_OUTPUT)
+      assert File.exist?(TEST_OUTPUT)
+    ensure
+      FileUtils.rm(TEST_OUTPUT)
+    end
   end
   
   def test_save_png
-    flunk
+    begin
+      path = File.dirname(__FILE__) + "/test_proxies/Kanaty.stabilizer.p"
+      proxy = DiscreetProxy.from_file(f)
+      proxy.save_png(TEST_PNG)
+      assert File.exist?(TEST_PNG)
+      assert_equal ChunkyPNG.from_file(TEST_OUTPUT), proxy.to_png
+    ensure
+      FileUtils.rm(TEST_PNG)
+    end
   end
 end
