@@ -50,7 +50,8 @@ module DiscreetProxy
     # Image dimensions, standard is 126x92
     attr_reader :width, :height
     
-    # Array of rows with each row being an array of 3-valut RGB triplets
+    # Array of rows with each row being an array of packed color 
+    # integers (you can unpack them with ChunkyPNG::Color)
     attr_reader :rows 
     
     def initialize(w = DEFAULT_WIDTH, h = DEFAULT_HEIGHT)
@@ -62,10 +63,8 @@ module DiscreetProxy
     def to_png
       png = ChunkyPNG::Image.new(@width, @height)
       png.metadata["Software"] = "Ruby DiscreetProxy converter/chunky_png"
-      @rows.each_with_index do | row, row_idx |
-        row.each_with_index do | pix, col_idx |
-          png[col_idx, row_idx] = pix
-        end
+      @rows.each_with_index do | row, y |
+        png.replace_row!(y, row)
       end
       png
     end
@@ -119,34 +118,30 @@ module DiscreetProxy
     def fill_pixbuf(io)
       @rows = []
       
-      # Data comes in row per row, starting on lower left with
-      # the values in the row being mirrored
+      # Data comes in row per row, starting on bottom left because of endianness
       per_row = (@width.to_i + row_pad) * 3
-      total_size = (per_row * @height) + 1
-      # First byteswap is when reading rows. We want to read from
-      # the bottom, so...
-      blob = StringIO.new(io.read(total_size).reverse)
+      total_size = ((per_row + row_pad) * @height) + 1
+      blob = StringIO.new(io.read(total_size))
       
       @height.times do
-        # At the end of each row (thus at the beginning byteswap),
-        # 2 bytes contain garbage since rows are aligned
-        # to start at 8-complement byte offsets. If they are not discarded this disturbs
-        # the RGB cadence of the other values.
-        skip = blob.read(row_pad)
-        
         row = []
         row_data = blob.read(@width.to_i * 3)
         row_data = StringIO.new(row_data.to_s)
         
         # Read 3x8bit for each pixel
         @width.times do
-          # And guess what - here they are reversed too! How awesome is that!
-          rgb = (row_data.read(3) || "AAA").unpack("CCC").reverse
+          rgb = (row_data.read(3) || "AAA").unpack("CCC")
           row.push(pack_rgb(*rgb))
         end
         
-        # Abd the row itself is reversed too
-        @rows.push(row.reverse)
+        # At the end of each row (thus at the beginning byteswap),
+        # 2 bytes contain garbage since rows are aligned
+        # to start at 8-complement byte offsets. If they are not discarded this disturbs
+        # the RGB cadence of the other values.
+        blob.seek(blob.pos + row_pad)
+        
+        # Since the file is actually BE, the rows are ordered top to bottom in the file
+        @rows.unshift(row)
       end
     end
     
