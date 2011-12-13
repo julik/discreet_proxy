@@ -2,7 +2,7 @@ require "chunky_png"
 
 # The whole module for making and reading Flame proxy icon files
 module DiscreetProxy
-  VERSION = "0.0.1"
+  VERSION = "1.0.0"
   
   # Parse a .p file and return a Proxy
   def self.from_file(path)
@@ -66,6 +66,8 @@ module DiscreetProxy
       @rows.each_with_index do | row, y |
         png.replace_row!(y, row)
       end
+      # Bump it to the default icon size
+      png.resample_bilinear!(DEFAULT_WIDTH, DEFAULT_HEIGHT)
       png
     end
     
