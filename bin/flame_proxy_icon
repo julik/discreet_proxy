@@ -18,7 +18,7 @@ ARGV.each do | filename_to_convert |
     proxy = DiscreetProxy.from_png(png)
     proxy.save(destination_filename)
   else
-    destination_filename = filename_to_convert.gsub(/\.p$/, '.png')
+    destination_filename = filename_to_convert + "ng" # .png
     proxy = DiscreetProxy.from_file(filename_to_convert)
     proxy.save_png(destination_filename)
   end
