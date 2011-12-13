@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = "discreet_proxy"
-  s.version = "0.0.1"
+  s.version = "1.0.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Julik Tarkhanov"]
-  s.date = "2011-12-12"
+  s.date = "2011-12-13"
   s.email = "me@julik.nl"
   s.executables = ["flame_proxy_icon"]
   s.extra_rdoc_files = [
@@ -27,7 +27,6 @@ Gem::Specification.new do |s|
     "lib/discreet_proxy.rb",
     "test/converted_png_proxies/Kanaty.stabilizer.p.p.png",
     "test/converted_png_proxies/Medianize.stabilizer.p.p.png",
-    "test/converted_png_proxies/Portretten_Erasmusbrug_Pts.stabilizer.p.p.png",
     "test/converted_png_proxies/Ripples.glsl.p.p.png",
     "test/converted_png_proxies/Tezt_flame_5_trackers.stabilizer.p.p.png",
     "test/converted_png_proxies/doberman.batch.p.p.png",
@@ -41,7 +40,6 @@ Gem::Specification.new do |s|
     "test/test_discreet_proxy.rb",
     "test/test_proxies/Kanaty.stabilizer.p",
     "test/test_proxies/Medianize.stabilizer.p",
-    "test/test_proxies/Portretten_Erasmusbrug_Pts.stabilizer.p",
     "test/test_proxies/Ripples.glsl.p",
     "test/test_proxies/Tezt_flame_5_trackers.stabilizer.p",
     "test/test_proxies/doberman.batch.p",
@@ -49,7 +47,8 @@ Gem::Specification.new do |s|
     "test/test_proxies/e292_v02shadow.batch.p",
     "test/test_proxies/spontaan.stabilizer.p",
     "test/test_proxies/spontaan2.stabilizer.p",
-    "test/test_proxies/t2.batch.p"
+    "test/test_proxies/t2.batch.p",
+    "test/test_proxy_out/Kanaty.stabilizer.p"
   ]
   s.homepage = "http://github.com/julik/discreet_proxy"
   s.licenses = ["MIT"]
