@@ -49,8 +49,7 @@ class TestDiscreetProxy < Test::Unit::TestCase
     Dir.glob(File.dirname(__FILE__) + "/test_proxies/*.p").each do | f |
       proxy = DiscreetProxy.from_file(f)
       png_path = File.dirname(__FILE__) + "/converted_png_proxies/%s.p.png" % File.basename(f)
-      chunky_png = proxy.to_png
-      assert_equal chunky_png, ChunkyPNG::Image.from_file(png_path)
+      assert_same_png ChunkyPNG::Image.from_file(png_path), proxy.to_png
     end
   end
   
@@ -58,10 +57,7 @@ class TestDiscreetProxy < Test::Unit::TestCase
     f = File.dirname(__FILE__) + "/converted_png_proxies/Kanaty.stabilizer.p.p.png"
     png = ChunkyPNG::Image.from_file(f)
     proxy = DiscreetProxy.from_png(png)
-    roundtrip_png = proxy.to_png
-    
-    dest = '/tmp/foo_%s' % File.basename(f)
-    assert_equal png, roundtrip_png
+    assert_same_png png, proxy.to_png
   end
   
   TEST_OUTPUT = "./test.p"
@@ -88,5 +84,14 @@ class TestDiscreetProxy < Test::Unit::TestCase
     proxy.save_png(TEST_PNG)
     assert File.exist?(TEST_PNG)
     assert_equal ChunkyPNG::Image.from_file(TEST_PNG), proxy.to_png
+  end
+  
+  def assert_same_png(ref, actual)
+    if ref != actual
+      ref.save("/tmp/REF.png")
+      actual.save("/tmp/ACTUAL.png")
+      `open /tmp/REF.png /tmp/ACTUAL.png`
+      assert_equal ref, actual, "The PNG files were not the same"
+    end
   end
 end
