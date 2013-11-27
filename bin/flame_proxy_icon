@@ -6,7 +6,7 @@ require "optparse"
 $from_png = false
 $error = true
 OptionParser.new do | op |
-  op.banner = "Usage: flame_proxy_icon --png convert_from_this_png.png"
+  op.banner = "Usage: flame_proxy_icon --from-png convert_from_this_png.png"
   op.on("--from-png", "Generate a .p proxy from a PNG file") { $from_png = true; $error = false}
   op.on("--from-icon", "Generate a .png file from a proxy .p file") { $from_png = false; $error = false}
 end.parse!
