@@ -2,7 +2,7 @@ require "chunky_png"
 
 # The whole module for making and reading Flame proxy icon files
 module DiscreetProxy
-  VERSION = "1.0.0"
+  VERSION = "1.0.1"
   
   # Parse a .p file and return a Proxy
   def self.from_file(path)
