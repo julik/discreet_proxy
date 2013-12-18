@@ -2,15 +2,18 @@
 
 Writes and reads Flame/Smoke proxy files (.p) using ChunkyPNG.
 
-To read every .p file on your Flame system and write it out as a PNG preview to the /tmp
+== Installation
 
-  Dir.glob("/usr/discreet/project/**/*.p").each do | icon_path |
-    proxy = DiscreetProxy.from_file(icon_path)
-    dest_path = "/tmp/" + File.basename(icon_path) + ".png"
-    proxy.save_png(dest_path)
-  end
-  
-Also you can use the builtin `flame_proxy_icon` binary to convert to and from the format.
+Run these two commands in your terminal:
+
+  $sudo gem install discreet_proxy
+  $flame_proxy_icon --help
+
+If the first one does not work - make sure you have Ruby installed.
+
+== Usage from the command line
+
+The builtin `flame_proxy_icon` binary is used to convert to and from the `.p` format.
 
   $flame_proxy_icon --from-png my_icon.png
   
@@ -20,6 +23,20 @@ will create "my_icon.p", and the reverse
 
 will create a SuperSetup.batch.png file that you can massage in, say, Photoshop.
 
+== Usage from Ruby
+
+To read every .p file on your Flame system and write it out as a PNG preview to the /tmp
+
+  require "rubygems"
+  require "discreet_proxy"
+  Dir.glob("/usr/discreet/project/**/*.p").each do | icon_path |
+    proxy = DiscreetProxy.from_file(icon_path)
+    dest_path = "/tmp/" + File.basename(icon_path) + ".png"
+    proxy.save_png(dest_path)
+  end
+
+From there on the possibilities are endless.
+  
 == Contributing to discreet_proxy
  
 * Check out the latest master to make sure the feature hasn't been implemented or the bug hasn't been fixed yet
@@ -32,6 +49,6 @@ will create a SuperSetup.batch.png file that you can massage in, say, Photoshop.
 
 == Copyright
 
-Copyright (c) 2011 Julik Tarkhanov. See LICENSE.txt for
+Copyright (c) 2011 and on Julik Tarkhanov. See LICENSE.txt for
 further details.
 
