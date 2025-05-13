@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "chunky_png"
 
 # The whole module for making and reading Flame proxy icon files
