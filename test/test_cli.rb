@@ -1,7 +1,7 @@
-require File.expand_path(File.dirname(__FILE__)) + '/helper'
+require_relative "helper"
 require "cli_test"
 
-class CliTest < Test::Unit::TestCase
+class CliTest < Minitest::Test
   TEMP_DIR = File.expand_path(File.dirname(__FILE__) + "/tmp")
   BIN_P = File.expand_path(File.dirname(__FILE__) + "/../bin/flame_proxy_icon")
   
@@ -19,14 +19,14 @@ class CliTest < Test::Unit::TestCase
   end
   
   def test_cli_with_no_args_produces_usage
-    status, o, e = cli('')
+    status, _o, e = cli('')
     assert_equal 1, status
-    assert_match /Also use the --help option/, e
+    assert_match( /Also use the --help option/, e)
   end
   
   def test_cli_from_png
     FileUtils.cp(File.dirname(__FILE__) + "/converted_png_proxies/Kanaty.stabilizer.p.p.png", TEMP_DIR)
-    status, o, e = cli("--from-png #{TEMP_DIR}/Kanaty.stabilizer.p.p.png")
+    status, _o, e = cli("--from-png #{TEMP_DIR}/Kanaty.stabilizer.p.p.png")
     assert status.zero?, e
     assert File.exist?(TEMP_DIR + "/Kanaty.stabilizer.p.p.p")
   end
@@ -34,7 +34,7 @@ class CliTest < Test::Unit::TestCase
   def test_cli_from_p
     FileUtils.cp(File.dirname(__FILE__) + "/test_proxies/Kanaty.stabilizer.p", TEMP_DIR)
     
-    status, o, e = cli("--from-icon #{TEMP_DIR}/Kanaty.stabilizer.p")
+    status, _o, e = cli("--from-icon #{TEMP_DIR}/Kanaty.stabilizer.p")
     assert status.zero?, e
     assert File.exist?(TEMP_DIR + "/Kanaty.stabilizer.png")
   end

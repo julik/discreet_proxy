@@ -56,29 +56,13 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
   s.rubygems_version = "2.0.3"
   s.summary = "Parses and creates Flame/Smoke .p proxy icon files"
+  s.specification_version = 4
 
-  if s.respond_to? :specification_version then
-    s.specification_version = 4
+  s.add_runtime_dependency "chunky_png"#, "~>1.2"
 
-    if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
-      s.add_runtime_dependency(%q<chunky_png>, ["~> 1.2"])
-      s.add_development_dependency(%q<rake>, [">= 0"])
-      s.add_development_dependency(%q<bundler>, [">= 0"])
-      s.add_development_dependency(%q<jeweler>, [">= 0"])
-      s.add_development_dependency(%q<cli_test>, [">= 0"])
-    else
-      s.add_dependency(%q<chunky_png>, ["~> 1.2"])
-      s.add_dependency(%q<rake>, [">= 0"])
-      s.add_dependency(%q<bundler>, [">= 0"])
-      s.add_dependency(%q<jeweler>, [">= 0"])
-      s.add_dependency(%q<cli_test>, [">= 0"])
-    end
-  else
-    s.add_dependency(%q<chunky_png>, ["~> 1.2"])
-    s.add_dependency(%q<rake>, [">= 0"])
-    s.add_dependency(%q<bundler>, [">= 0"])
-    s.add_dependency(%q<jeweler>, [">= 0"])
-    s.add_dependency(%q<cli_test>, [">= 0"])
-  end
+  s.add_development_dependency "rake"
+  s.add_development_dependency "cli_test"
+  s.add_development_dependency "minitest"
+  s.add_development_dependency "ostruct"
 end
 

@@ -1,6 +1,6 @@
-require 'helper'
+require_relative "helper"
 
-class TestDiscreetProxy < Test::Unit::TestCase
+class TestDiscreetProxy < Minitest::Test
   def test_reading
     f = DiscreetProxy.from_file(File.dirname(__FILE__) + "/test_proxies/e292_v02.batch.p")
     assert_equal 126, f.width, "Width should be correct"
@@ -18,7 +18,6 @@ class TestDiscreetProxy < Test::Unit::TestCase
   def test_to_dotp
     Dir.glob(File.dirname(__FILE__) + "/test_proxies/*.p").each do | f |
       proxy = DiscreetProxy.from_file(f)
-      repl = '/tmp/%s.p' % File.basename(f)
       message = "Roundtripping #{File.basename(f)}"
       
       pixdata = proxy.to_dotp # Package up

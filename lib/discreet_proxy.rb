@@ -96,7 +96,6 @@ module DiscreetProxy
     def to_dotp
       # Pack the header
       buf = StringIO.new(0xFF.chr * 40)
-      byteswap_version = [PROXY_VERSION].pack("e").reverse
       header = [MAGIC, VERSION_BSWAP, width, height, PROXY_DEPTH].pack("na6nnn")
       buf.write(header)
       buf.seek(40)
